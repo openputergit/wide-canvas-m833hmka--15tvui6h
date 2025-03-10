@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navbar -->
+        <nav class="bg-blue-600 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Employee Management System</h1>
+                <div class="flex space-x-4">
+                    <button onclick="showSection('attendance')" class="hover:bg-blue-700 px-3 py-2 rounded">Attendance</button>
+                    <button onclick="showSection('loans')" class="hover:bg-blue-700 px-3 py-2 rounded">Loans</button>
+                    <button onclick="showSection('salary')" class="hover:bg-blue-700 px-3 py-2 rounded">Salary</button>
+                    <button onclick="showSection('advances')" class="hover:bg-blue-700 px-3 py-2 rounded">Advances</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto p-4">
+            <!-- Attendance Section -->
+            <div id="attendance" class="section">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-2xl font-bold mb-4">Attendance Tracker</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input type="text" id="employeeName" placeholder="Employee Name" class="border p-2 rounded">
+                        <input type="datetime-local" id="timeStamp" class="border p-2 rounded">
+                    </div>
+                    <div class="flex gap-4 mb-4">
+                        <button onclick="markAttendance('in')" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Clock In</button>
+                        <button onclick="markAttendance('out')" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Clock Out</button>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 text-left">Employee</th>
+                                    <th class="p-3 text-left">Date</th>
+                                    <th class="p-3 text-left">Clock In</th>
+                                    <th class="p-3 text-left">Clock Out</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loans Section -->
+            <div id="loans" class="section hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-2xl font-bold mb-4">Loan Management</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <input type="text" id="loanEmployee" placeholder="Employee Name" class="border p-2 rounded">
+                        <input type="number" id="loanAmount" placeholder="Loan Amount" class="border p-2 rounded">
+                        <input type="date" id="loanDate" class="border p-2 rounded">
+                    </div>
+                    <button onclick="addLoan()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4">Add Loan</button>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 text-left">Employee</th>
+                                    <th class="p-3 text-left">Amount</th>
+                                    <th class="p-3 text-left">Date</th>
+                                    <th class="p-3 text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loansTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Section -->
+            <div id="salary" class="section hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-2xl font-bold mb-4">Salary Calculator</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <input type="text" id="salaryEmployee" placeholder="Employee Name" class="border p-2 rounded">
+                        <input type="number" id="baseSalary" placeholder="Base Salary" class="border p-2 rounded">
+                        <input type="month" id="salaryMonth" class="border p-2 rounded">
+                    </div>
+                    <button onclick="calculateSalary()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4">Calculate Salary</button>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 text-left">Employee</th>
+                                    <th class="p-3 text-left">Month</th>
+                                    <th class="p-3 text-left">Base Salary</th>
+                                    <th class="p-3 text-left">Deductions</th>
+                                    <th class="p-3 text-left">Net Salary</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salaryTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advances Section -->
+            <div id="advances" class="section hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-2xl font-bold mb-4">Advance Management</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <input type="text" id="advanceEmployee" placeholder="Employee Name" class="border p-2 rounded">
+                        <input type="number" id="advanceAmount" placeholder="Advance Amount" class="border p-2 rounded">
+                        <input type="date" id="advanceDate" class="border p-2 rounded">
+                    </div>
+                    <button onclick="addAdvance()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4">Add Advance</button>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 text-left">Employee</th>
+                                    <th class="p-3 text-left">Amount</th>
+                                    <th class="p-3 text-left">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="advancesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let attendanceData = [];
+        let loansData = [];
+        let salaryData = [];
+        let advancesData = [];
+
+        // Section Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        // Attendance Functions
+        function markAttendance(type) {
+            const name = document.getElementById('employeeName').value;
+            const timestamp = document.getElementById('timeStamp').value;
+            
+            if (!name || !timestamp) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const entry = attendanceData.find(a => a.employee === name && a.date === timestamp.split('T')[0]);
+            
+            if (entry) {
+                if (type === 'out') {
+                    entry.clockOut = timestamp.split('T')[1];
+                }
+            } else {
+                attendanceData.push({
+                    employee: name,
+                    date: timestamp.split('T')[0],
+                    clockIn: type === 'in' ? timestamp.split('T')[1] : '',
+                    clockOut: type === 'out' ? timestamp.split('T')[1] : ''
+                });
+            }
+
+            updateAttendanceTable();
+        }
+
+        function updateAttendanceTable() {
+            const tbody = document.getElementById('attendanceTable');
+            tbody.innerHTML = '';
+            
+            attendanceData.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="p-3">${entry.employee}</td>
+                    <td class="p-3">${entry.date}</td>
+                    <td class="p-3">${entry.clockIn}</td>
+                    <td class="p-3">${entry.clockOut}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Loans Functions
+        function addLoan() {
+            const employee = document.getElementById('loanEmployee').value;
+            const amount = document.getElementById('loanAmount').value;
+            const date = document.getElementById('loanDate').value;
+
+            if (!employee || !amount || !date) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            loansData.push({
+                employee,
+                amount: parseFloat(amount),
+                date,
+                status: 'Pending'
+            });
+
+            updateLoansTable();
+        }
+
+        function updateLoansTable() {
+            const tbody = document.getElementById('loansTable');
+            tbody.innerHTML = '';
+            
+            loansData.forEach(loan => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="p-3">${loan.employee}</td>
+                    <td class="p-3">₹${loan.amount.toFixed(2)}</td>
+                    <td class="p-3">${loan.date}</td>
+                    <td class="p-3">${loan.status}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Salary Functions
+        function calculateSalary() {
+            const employee = document.getElementById('salaryEmployee').value;
+            const baseSalary = parseFloat(document.getElementById('baseSalary').value);
+            const month = document.getElementById('salaryMonth').value;
+
+            if (!employee || !baseSalary || !month) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const loans = loansData
+                .filter(loan => loan.employee === employee)
+                .reduce((sum, loan) => sum + loan.amount, 0);
+            
+            const advances = advancesData
+                .filter(advance => advance.employee === employee)
+                .reduce((sum, advance) => sum + advance.amount, 0);
+
+            const deductions = loans + advances;
+            const netSalary = baseSalary - deductions;
+
+            salaryData.push({
+                employee,
+                month,
+                baseSalary,
+                deductions,
+                netSalary
+            });
+
+            updateSalaryTable();
+        }
+
+        function updateSalaryTable() {
+            const tbody = document.getElementById('salaryTable');
+            tbody.innerHTML = '';
+            
+            salaryData.forEach(salary => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="p-3">${salary.employee}</td>
+                    <td class="p-3">${salary.month}</td>
+                    <td class="p-3">₹${salary.baseSalary.toFixed(2)}</td>
+                    <td class="p-3">₹${salary.deductions.toFixed(2)}</td>
+                    <td class="p-3">₹${salary.netSalary.toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Advances Functions
+        function addAdvance() {
+            const employee = document.getElementById('advanceEmployee').value;
+            const amount = document.getElementById('advanceAmount').value;
+            const date = document.getElementById('advanceDate').value;
+
+            if (!employee || !amount || !date) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            advancesData.push({
+                employee,
+                amount: parseFloat(amount),
+                date
+            });
+
+            updateAdvancesTable();
+        }
+
+        function updateAdvancesTable() {
+            const tbody = document.getElementById('advancesTable');
+            tbody.innerHTML = '';
+            
+            advancesData.forEach(advance => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="p-3">${advance.employee}</td>
+                    <td class="p-3">₹${advance.amount.toFixed(2)}</td>
+                    <td class="p-3">${advance.date}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Initialize with attendance section visible
+        showSection('attendance');
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
